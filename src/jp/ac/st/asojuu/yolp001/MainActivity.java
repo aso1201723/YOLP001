@@ -3,6 +3,8 @@ package jp.ac.st.asojuu.yolp001;
 import jp.co.yahoo.android.maps.GeoPoint;
 import jp.co.yahoo.android.maps.MapController;
 import jp.co.yahoo.android.maps.MapView;
+import jp.co.yahoo.android.maps.weather.WeatherOverlay;
+import jp.co.yahoo.android.maps.weather.WeatherOverlay.WeatherOverlayListener;
 import android.app.Activity;
 import android.content.Context;
 import android.location.Criteria;
@@ -12,7 +14,8 @@ import android.location.LocationManager;
 import android.os.Bundle;
 import android.view.Menu;
 
-public class MainActivity extends Activity implements LocationListener{
+public class MainActivity extends Activity implements LocationListener, WeatherOverlayListener{
+
 
 	//LocationManagrを準備
 	LocationManager mLocationManager = null;
@@ -22,6 +25,21 @@ public class MainActivity extends Activity implements LocationListener{
 	int lastLatitude = 0;
 	//直前の経度（1000000倍精度）
 	int lastLongitude = 0;
+
+	//雨雲レーダー表示用のオーバレイクラス変数を準備
+	WeatherOverlay mWeatherOverlay = null;
+
+	@Override
+	public void errorUpdateWeather(WeatherOverlay arg0, int arg1) {
+		// TODO 自動生成されたメソッド・スタブ
+
+	}
+
+	@Override
+	public void finishUpdateWeather(WeatherOverlay arg0) {
+		// TODO 自動生成されたメソッド・スタブ
+
+	}
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -120,6 +138,19 @@ public class MainActivity extends Activity implements LocationListener{
 
 		// 位置情報のイベントリスナーであるLocationListenerを登録
 		mLocationManager.requestLocationUpdates(provider, 0, 0, this);
+
+		// ここから雨雲レーダー処理
+		// 雨雲レーダー用のオーバーレイ設定処理
+		mWeatherOverlay = new WeatherOverlay(this);
+
+		//WeatherOverlayListenerを設定
+		mWeatherOverlay.setWeatherOverlayListener(this);
+
+		//雨雲レーダーの更新間隔を、分単位で指定
+		mWeatherOverlay.startAutoUpdate(1);
+
+		//MapViewにWeatherOverlayを追加
+		mMapView.getOverlays().add(mWeatherOverlay);
 
 	}
 
