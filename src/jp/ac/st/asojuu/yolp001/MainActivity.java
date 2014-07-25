@@ -3,6 +3,10 @@ package jp.ac.st.asojuu.yolp001;
 import jp.co.yahoo.android.maps.GeoPoint;
 import jp.co.yahoo.android.maps.MapController;
 import jp.co.yahoo.android.maps.MapView;
+import jp.co.yahoo.android.maps.navi.NaviController;
+import jp.co.yahoo.android.maps.navi.NaviController.NaviControllerListener;
+import jp.co.yahoo.android.maps.routing.RouteOverlay;
+import jp.co.yahoo.android.maps.routing.RouteOverlay.RouteOverlayListener;
 import jp.co.yahoo.android.maps.weather.WeatherOverlay;
 import jp.co.yahoo.android.maps.weather.WeatherOverlay.WeatherOverlayListener;
 import android.app.Activity;
@@ -14,7 +18,7 @@ import android.location.LocationManager;
 import android.os.Bundle;
 import android.view.Menu;
 
-public class MainActivity extends Activity implements LocationListener, WeatherOverlayListener{
+public class MainActivity extends Activity implements LocationListener, WeatherOverlayListener, NaviControllerListener,RouteOverlayListener{
 
 
 	//LocationManagrを準備
@@ -28,6 +32,11 @@ public class MainActivity extends Activity implements LocationListener, WeatherO
 
 	//雨雲レーダー表示用のオーバレイクラス変数を準備
 	WeatherOverlay mWeatherOverlay = null;
+
+	//ルーティング
+	NaviController mNaviController = null;
+	RouteOverlay mRouteOverlay = null;
+
 
 	@Override
 	public void errorUpdateWeather(WeatherOverlay arg0, int arg1) {
@@ -152,12 +161,87 @@ public class MainActivity extends Activity implements LocationListener, WeatherO
 		//MapViewにWeatherOverlayを追加
 		mMapView.getOverlays().add(mWeatherOverlay);
 
+		//ここからルート検索
+		mRouteOverlay = new RouteOverlay(this,"dj0zaiZpPTdhZ1hERlB4QU01ViZzPWNvbnN1bWVyc2VjcmV0Jng9Mjg-");
+
+		//
+
 	}
 
 	@Override
 	public void onProviderDisabled(String provider) {
 		// TODO 自動生成されたメソッド・スタブ
 
+	}
+
+	@Override
+	public boolean errorRouteSearch(RouteOverlay arg0, int arg1) {
+		// TODO 自動生成されたメソッド・スタブ
+		return false;
+	}
+
+	@Override
+	public boolean finishRouteSearch(RouteOverlay arg0) {
+		// TODO 自動生成されたメソッド・スタブ
+
+		//NaviControllerを作成しRouteOverlayインスタンスを設定
+		mNaviController = new NaviController(this,mRouteOverlay);
+
+		//MapViewインスタンスを設定
+		mNaviController.setMapView(mMapView);
+
+		//NaviControllerListenerを設定
+		mNaviController.setNaviControlListener(this);
+
+		//案内処理を開始
+		mNaviController.start();
+		return false;
+	}
+
+	@Override
+	public boolean onGoal(NaviController arg0) {
+		// TODO 自動生成されたメソッド・スタブ
+		//案内処理を継続しない場合は停止させる
+		mNaviController.stop();
+		return false;
+	}
+
+	@Override
+	public boolean onLocationAccuracyBad(NaviController arg0) {
+		// TODO 自動生成されたメソッド・スタブ
+		return false;
+	}
+
+	@Override
+	public boolean onLocationChanged(NaviController arg0) {
+		// TODO 自動生成されたメソッド・スタブ
+		//目的地までの残り距離
+		double rema_dist = mNaviController.getTotalDistance();
+
+		//目的地までの残りの時間
+		double rema_time = mNaviController.getTotalTime();
+
+		//出発地から目的地までの距離
+		double total_dist = mNaviController.getDistanceOfRemainder();
+
+		//出発地から目的地までの時間
+		double total_time = mNaviController.getTimeOfRemainder();
+
+		//現在位置
+		Location location = mNaviController.getLocation();
+		return false;
+	}
+
+	@Override
+	public boolean onLocationTimeOver(NaviController arg0) {
+		// TODO 自動生成されたメソッド・スタブ
+		return false;
+	}
+
+	@Override
+	public boolean onRouteOut(NaviController arg0) {
+		// TODO 自動生成されたメソッド・スタブ
+		return false;
 	}
 
 }
