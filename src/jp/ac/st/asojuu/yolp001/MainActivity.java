@@ -81,7 +81,7 @@ public class MainActivity extends Activity implements LocationListener{
 		super.onResume();
 
 		// 地図表示用のYahooライブラリview部品を用意
-		mMapView = new MapView(this,"ERlB4QU01ViZzPWNvbnN1bWVyc2VjcmV0Jng9Mjgdj0zaiZpPTdhZ1hERlB4QU01ViZzPWNvbnN1bWVyc2VjcmV0Jng9Mjg-");
+		mMapView = new MapView(this,"dj0zaiZpPTdhZ1hERlB4QU01ViZzPWNvbnN1bWVyc2VjcmV0Jng9Mjg-");
 		// ズームボタンを画面にON
 		mMapView.setBuiltInZoomControls(true);
 		// 地図縮尺バーを画面にON
